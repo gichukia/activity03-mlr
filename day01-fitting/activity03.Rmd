@@ -50,7 +50,12 @@ For every 1 unit increase in hf_score we expect the pf_score to increse by 2 uni
 
 ##3D Plots
 
-```{r}
-#ggplot(hfi, aes(x = hf_score , y = ef_score, z = pf_score))
+```{r, warning=FALSE}
+library(plotly)
+
+plot_ly(
+  hfi, x = ~hf_score , y = ~ef_score, z = ~pf_score, sizes = c(0.5,0.5,0.5)
+)
+
 ```
 
