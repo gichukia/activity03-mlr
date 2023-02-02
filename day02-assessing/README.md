@@ -234,7 +234,7 @@ can get a similar measurement for MLR models.
 - Create a new R code chunk and type the following code.
 
   ``` r
-  glance(m1)
+  glance(m_pf)
   ```
 
 After doing this and running the code, answer the following questions:
