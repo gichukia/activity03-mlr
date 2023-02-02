@@ -1,8 +1,56 @@
 ---
-title: "Activity 2 - Day 1"
+title: "Fitting a Multiple Linear Regression Model"
 output: github_document
 ---
 
-```{setup, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidymodels)
+library(GGally)
 ```
+
+```{r reading the dataset}
+hfi <- read_csv("https://www.openintro.org/data/csv/hfi.csv")
+```
+
+Plottig a density graph to display the distribution of pfi_score
+
+```{r}
+ggplot(hfi, aes(x = pf_score)) +
+  geom_density()
+```
+
+The density graph is negatively skewed. It also has 3 peak. The distribution appears to be biomodal with the main peak around 6.5 and another significant peak around 8.9. 
+
+## Pairwise Relationships
+
+```{r, warning=FALSE}
+hfi %>%
+  select(ends_with("_score")) %>%
+  ggpairs()
+```
+
+From this visualization, all variables have linear patterns. Pf_score has a bimodal distribution with 3 peaks and is negatively skewed, ef_score is negatively skewed and appears to have a normal distribution, while hf_score has a bimodal distribution which is also negatively skewed.
+
+## The Multiple Linear Regression Model
+
+```{r}
+m_hr_ef <- lm(pf_score ~ hf_score + ef_score, data = hfi)
+tidy(m_hr_ef)
+```
+
+The estimated equation is y = 1.46 + 2.00(hf_score) - 1.00(ef_score).
+
+For countries with ef_score and hf_score of 0, we expect their mean pf_score to be 1.46. 
+
+For every 1 unit increase in ef_score we expect the pf_score to decrease by 1 unit.
+
+For every 1 unit increase in hf_score we expect the pf_score to increse by 2 units.
+
+##3D Plots
+
+```{r}
+#ggplot(hfi, aes(x = hf_score , y = ef_score, z = pf_score))
+```
+
