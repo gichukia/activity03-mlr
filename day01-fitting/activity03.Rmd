@@ -53,9 +53,74 @@ For every 1 unit increase in hf_score we expect the pf_score to increse by 2 uni
 ```{r, warning=FALSE}
 library(plotly)
 
-plot_ly(
+plot1 <- plot_ly(
   hfi, x = ~hf_score , y = ~ef_score, z = ~pf_score, sizes = c(0.5,0.5,0.5)
 )
 
+```
+
+
+```{r}
+# review any visual patterns
+hfi %>%
+  select(pf_score, pf_expression_influence, pf_expression_control) %>%
+  ggpairs()
+
+# fit the mlr model
+m_pf <- lm(pf_score ~ pf_expression_influence + pf_expression_control, data = hfi)
+tidy(m_pf)
+```
+
+For countries with a pf_expression_influence of 0 (those with the largest amount of laws/regulations on media content) and pf_expression_control of 0 (those with the largest amount of political pressure on media content), we expect their mean personal freedom score to be 4.71.
+
+For a given pf_expression_control value (i.e., a given level of laws/regulations on media content), a 1 unit increase in pf_expression_influence is associated with a 0.188 unit increase of a country’s mean personal freedom score.
+
+For a given pf_expression_influence value (i.e., a given level of political pressure on media content), a 1 unit increase in pf_expression_control is associated with a 0.288 unit increase of a country’s mean personal freedom score.
+
+# Relationship between the response and predictors
+```{r}
+summary(m_pf)
+```
+
+F-statistic:  1308 on 2 and 1375 DF,  p-value: < 2.2e-16
+Reject null hypotheses
+
+```{r}
+glance(m_pf)
+```
+
+To check for linearlity Assumption
+```{r}
+# obtain fitted values and residuals
+m_pf_aug <- augment(m_pf)
+
+# plot fitted values and residuals
+ggplot(data = m_pf_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+```
+
+Checking for Normality assumption
+```{r}
+ggplot(data = m_pf_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 0.25) +
+  xlab("Residuals")
+```
+
+# Predictiom
+
+```{r}
+hfi %>% 
+  filter(countries == "United States" & year == 2016) %>% 
+  select(pf_score, pf_expression_influence, pf_expression_control)
+```
+
+
+```{r}
+hfi %>% 
+  filter(countries == "United States" & year == 2016) %>% 
+  predict(m_pf, .)
 ```
 
